@@ -1,8 +1,11 @@
 using CheckoutGateway.Api.Middlewares;
 using CheckoutGateway.Api.ServiceExtensions;
 using CheckoutGateway.BusinessLogic.Proxy.Bank.Models;
+using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,15 +21,17 @@ builder.Services.AddDatabaseService(configuration);
 builder.Services.AddProjectServices();
 builder.Services.AddProjectRepositories();
 
-if(serilogUrl != null)
+if (serilogUrl != null)
     builder.Host.UseSerilog((ctx, lc) => lc
     .WriteTo.Console()
     .WriteTo.Seq(serverUrl: serilogUrl));
 
+builder.Services.AddMediatR(AppDomain.CurrentDomain.GetAssemblies());
+//builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration =
-        $"{configuration.GetValue<string>("Redis:Server")}:{configuration.GetValue<int>("Redis:Port")},password={configuration.GetValue<string>("Redis:Password")}";
+        $"{configuration.GetValue<string>("Redis:Host")}:{configuration.GetValue<int>("Redis:Port")},password={configuration.GetValue<string>("Redis:Password")}";
 });
 
 builder.Services.AddApiVersioning(config =>
@@ -48,6 +53,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+//TODO: Delete the next two lines
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 

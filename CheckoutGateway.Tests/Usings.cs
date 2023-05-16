@@ -1,1 +1,1 @@
-global using XUnit;
+global using Xunit;

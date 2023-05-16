@@ -9,5 +9,6 @@ public class Transaction : Auditable
     public Customer Customer { get; set; }
     public string CallBackUrl { get; set; }
     public string Reference { get; set; }
-    public TransactionStatus Status { get; set; }
+    public string Description { get; set; }
+    public TransactionStatus Status { get; set; } = TransactionStatus.Initiated;
 }

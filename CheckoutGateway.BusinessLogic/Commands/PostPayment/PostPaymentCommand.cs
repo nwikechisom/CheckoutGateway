@@ -11,4 +11,5 @@ public class PostPaymentCommand : IRequest<PostPaymentResponse>
 {
     public string OneTimePassword { get; set; }
     public string TransactionReference { get; set; }
+    public string MerchantId { get; set; }
 }

@@ -14,6 +14,13 @@ namespace CheckoutGateway.BankSimulator.Api.Controllers
     [ApiController]
     public class BankPaymentController : ControllerBase
     {
+        private List<Card> _sessioncards = new List<Card>();
+
+        public BankPaymentController()
+        {
+            //Initiliaze cards to be used
+            _sessioncards = new CardHelper().testCards;
+        }
         [HttpPost("verifycard")]
         [ProducesDefaultResponseType(typeof(BankResponse))]
         public IActionResult Validate([FromBody] EncryptedRequestData request)
@@ -30,9 +37,8 @@ namespace CheckoutGateway.BankSimulator.Api.Controllers
                     Reference = requestReference
                 });
 
-
             // Find the card in the list of test cards
-            var card = CardHelper.testCards.FirstOrDefault(c => c.CardNumber == decryptedRequest.CardNumber && c.ExpiryMonth == decryptedRequest.ExpirationMonth && c.ExpiryYear == decryptedRequest.ExpirationYear);
+            var card = _sessioncards.FirstOrDefault(c => c.CardNumber == decryptedRequest.CardNumber && c.ExpiryMonth == decryptedRequest.ExpirationMonth && c.ExpiryYear == decryptedRequest.ExpirationYear);
 
             // If the card is found, check its status
             if (card != null)
@@ -40,7 +46,7 @@ namespace CheckoutGateway.BankSimulator.Api.Controllers
                 switch (card.Status)
                 {
                     case CardStatus.Valid:
-                        if (card.HolderName == decryptedRequest.CardHolderName && card.Customer.AvailableBalance > decryptedRequest.Amount)
+                        if (card.Customer.Name == decryptedRequest.CardHolderName && card.Customer.AvailableBalance > decryptedRequest.Amount)
                         {
                             card.Customer.Lien = decryptedRequest.Amount;
                             return Ok(new BankResponse
@@ -85,7 +91,7 @@ namespace CheckoutGateway.BankSimulator.Api.Controllers
             }
 
             // If the card is not found, return a 404 error
-            return NotFound(new BankResponse
+            return BadRequest(new BankResponse
             {
                 Message = "Invalid card details",
                 Status = "33",
@@ -114,7 +120,7 @@ namespace CheckoutGateway.BankSimulator.Api.Controllers
                     return Ok(new BankResponse
                     {
                         Message = "Payment Completed",
-                        Status = "99",
+                        Status = "00",
                         Reference = decryptedRequest.Reference
                     });
                 default:

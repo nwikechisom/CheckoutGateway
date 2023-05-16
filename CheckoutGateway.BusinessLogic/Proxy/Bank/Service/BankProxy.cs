@@ -24,12 +24,13 @@ namespace CheckoutGateway.BusinessLogic.Proxy.Bank.Service
             _logger = logger;
             _bankOptions = bankOptions.Value;
         }
+
         public async Task<BankResponse> ProcessTransaction(string reference, string oneTimeToken)
         {
             try
             {
                 _logger.LogInformation("Preocess transaction request to bank with reference: {0}", reference);
-                var flurlReponse = await $"{_bankOptions.Baseurl}/verifycard"
+                var flurlReponse = await $"{_bankOptions.Baseurl}/processtransaction"
                .WithHeader("X-Api-Key", _bankOptions.ApiKey)
                .PostJsonAsync(EncryptionHelper.EncryptRequest(new
                {
@@ -55,8 +56,9 @@ namespace CheckoutGateway.BusinessLogic.Proxy.Bank.Service
         {
             try
             {
-                var flurlReponse = await $"{_bankOptions.Baseurl}/validate"
+                var flurlReponse = await $"{_bankOptions.Baseurl}/verifycard"
                .WithHeader("X-Api-Key", _bankOptions.ApiKey)
+               .AllowAnyHttpStatus()
                .PostJsonAsync(EncryptionHelper.EncryptRequest(new
                {
                    CardNumber = cardNumber,
@@ -77,17 +79,9 @@ namespace CheckoutGateway.BusinessLogic.Proxy.Bank.Service
                     Status = "99",
                 };
             }
-            catch(FlurlHttpException fex)
-            {
-                return new BankResponse
-                {
-                    Message = fex.Message,
-                    Status = "99",
-                };
-            }
             catch (Exception ex)
             {
-
+                _logger.LogError("Bank validate card exception {0}",ex);
                 return new BankResponse
                 {
                     Message = "Unable to verify card details, please try again",

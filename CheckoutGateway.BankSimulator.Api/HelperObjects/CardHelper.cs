@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CheckoutGateway.BankSimulator.Api.HelperObjects
 {
-    public static class CardHelper
+    public class CardHelper
     {
 
-        public static List<Card> testCards = new List<Card>
+        public List<Card> testCards = new List<Card>
         {
             new Card
             {
@@ -15,7 +15,14 @@ namespace CheckoutGateway.BankSimulator.Api.HelperObjects
                 ExpiryYear = "23",
                 Cvv = "123",
                 HolderName = "John Doe",
-                Customer = testCustomers[0]
+                Customer = new Customer
+                {
+                    Email = "stevie.wonder@ny.com",
+                    PhoneNumber = "1234567890",
+                    Name = "Stevie Wonder",
+                    TotalBalance = 1000,
+                    Lien = 0
+                }
             },
             new Card
             {
@@ -24,7 +31,14 @@ namespace CheckoutGateway.BankSimulator.Api.HelperObjects
                 ExpiryYear = "22",
                 Cvv = "123",
                 HolderName = "Jane Doe",
-                Customer = testCustomers[1]
+                Customer = new Customer
+                {
+                    Email = "vera.wyatt@ny.plat",
+                    PhoneNumber = "1234567890",
+                    Name = "Vera Wyatt",
+                    TotalBalance = 80000,
+                    Lien = 0
+                }
             },
             new Card
             {
@@ -34,7 +48,14 @@ namespace CheckoutGateway.BankSimulator.Api.HelperObjects
                 Cvv = "123",
                 Status = CardStatus.Frozen,
                 HolderName = "John Smith",
-                Customer = testCustomers[2]
+                Customer = new Customer
+                {
+                    Email = "chloe.darson@ny.zoo",
+                    PhoneNumber = "1234567890",
+                    Name = "Chloe Darson",
+                    TotalBalance = 5000,
+                    Lien = 0
+                },
             },
             new Card
             {
@@ -43,8 +64,15 @@ namespace CheckoutGateway.BankSimulator.Api.HelperObjects
                 ExpiryYear = "23",
                 Cvv = "123",
                 Status = CardStatus.NotAcceptingOnlinePayments,
-                HolderName = "Jane Doe",
-                Customer = testCustomers[3]
+                HolderName = "Jane Fred",
+                Customer = new Customer
+                {
+                   Email = "munyi.ariela@mailer.uc",
+                    PhoneNumber = "1234567890",
+                    Name = "Munyi Ariel",
+                    TotalBalance = 20000,
+                    Lien = 0
+                },
             },
 
             new Card
@@ -55,51 +83,14 @@ namespace CheckoutGateway.BankSimulator.Api.HelperObjects
                 Cvv = "123",
                 Status = CardStatus.InsufficientFunds,
                 HolderName = "Jane Doe",
-                Customer = testCustomers[4]
-            },
-        };
-
-        public static List<Customer> testCustomers = new List<Customer>
-        {
-            new Customer
-            {
-                Email = "stevie.wonder@ny.com",
-                PhoneNumber = "1234567890",
-                Name = "name",
-                TotalBalance = 1000,
-                Lien = 0
-            },
-            new Customer
-            {
-                Email = "vera.wyatt@ny.plat",
-                PhoneNumber = "1234567890",
-                Name = "name",
-                TotalBalance = 80000,
-                Lien = 0
-            },
-            new Customer
-            {
-                Email = "chloe.darson@ny.zoo",
-                PhoneNumber = "1234567890",
-                Name = "name",
-                TotalBalance = 5000,
-                Lien = 0
-            },
-            new Customer
-            {
-               Email = "munyi.ariela@mailer.uc",
-                PhoneNumber = "1234567890",
-                Name = "name",
-                TotalBalance = 20000,
-                Lien = 0
-            },
-            new Customer
-            {
-               Email = "ace.kyd@mailer.uc",
-                PhoneNumber = "1234567890",
-                Name = "name",
-                TotalBalance = 0,
-                Lien = 0
+                Customer = new Customer
+                {
+                   Email = "ace.kyd@mailer.uc",
+                    PhoneNumber = "1234567890",
+                    Name = "Ace Kyd",
+                    TotalBalance = 0,
+                    Lien = 0
+                },
             },
         };
     }

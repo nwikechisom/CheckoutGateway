@@ -14,6 +14,9 @@ public class RequestPaymentCommand : IRequest<RequestPaymentResponse>
     public string Reference { get; set; }
     public double Amount { get; set; }
     public string PaymentDescription { get; set; }
+    public string MerchantId { get; set; }
+    public string Callback { get; set; }
+    public string Currency { get; set; }
 }
 
 public class BillingAddress
@@ -21,7 +24,7 @@ public class BillingAddress
     public string Address { get; set; }
     public string City { get; set; }
     public string PostCode { get; set; }
-    public string country { get; set; }
+    public string Country { get; set; }
 }
 
 public class Phone

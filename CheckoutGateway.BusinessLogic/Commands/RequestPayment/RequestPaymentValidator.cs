@@ -11,9 +11,10 @@ public class RequestPaymentValidator : AbstractValidator<RequestPaymentCommand>
         RuleFor(x => x.CardExpiryYear).NotEmpty();
         RuleFor(x => x.CardHolderName).NotEmpty().MaximumLength(100);
         RuleFor(x => x.CardCvv).NotEmpty().Equals(3);
-        RuleFor(x => x.BillingAddress.country).NotEmpty();
+        RuleFor(x => x.BillingAddress.Country).NotEmpty();
         RuleFor(x => x.BillingAddress.Address).NotEmpty();
         RuleFor(x => x.Phone.CountryCode).NotEmpty();
         RuleFor(x => x.Phone.Number).NotEmpty();
+        RuleFor(x => x.Callback).NotEmpty();
     }
 }
