@@ -17,7 +17,7 @@ public class PaymentDetailQueryHandler : IRequestHandler<PaymentDetailQuery, Pay
     }
     public async Task<PaymentDetailQueryResponse> Handle(PaymentDetailQuery request, CancellationToken cancellationToken)
     {
-        var transaction = _transactionRepository.Find(t => t.Reference == request.TransactionReference, t => t.Customer).First();
+        var transaction = _transactionRepository.Find(t => t.Reference == request.TransactionReference, t => t.Customer);
         if(transaction != null)
         {
             var response = _mapper.Map<PaymentDetailQueryResponse>(transaction);
