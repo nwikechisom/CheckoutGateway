@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33530.505
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckoutGateway.Api", "CheckoutGateway.Api\CheckoutGateway.Api.csproj", "{C6D13C0A-F1BD-4272-A087-AEB204119EAF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckoutGateway.BankSimulator.Api", "CheckoutGateway.BankSimulator.Api\CheckoutGateway.BankSimulator.Api.csproj", "{EBAB9115-E971-4320-8201-7D25FB82340F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckoutGateway.BusinessLogic", "CheckoutGateway.BusinessLogic\CheckoutGateway.BusinessLogic.csproj", "{F1F20871-5F17-46AD-A14C-3F330AF57C42}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckoutGateway.DataLayer", "CheckoutGateway.DataLayer\CheckoutGateway.DataLayer.csproj", "{0338A35A-BA44-4073-A5B0-BB1E616B2DAA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckoutGateway.Tests", "CheckoutGateway.Tests\CheckoutGateway.Tests.csproj", "{BD4E0471-6E08-41EE-A353-58100003D072}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{748246F3-4EA6-474F-A97D-B2D9BA06526C}"
+	ProjectSection(SolutionItems) = preProject
+		.env = .env
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C6D13C0A-F1BD-4272-A087-AEB204119EAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6D13C0A-F1BD-4272-A087-AEB204119EAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6D13C0A-F1BD-4272-A087-AEB204119EAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6D13C0A-F1BD-4272-A087-AEB204119EAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBAB9115-E971-4320-8201-7D25FB82340F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBAB9115-E971-4320-8201-7D25FB82340F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBAB9115-E971-4320-8201-7D25FB82340F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBAB9115-E971-4320-8201-7D25FB82340F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1F20871-5F17-46AD-A14C-3F330AF57C42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1F20871-5F17-46AD-A14C-3F330AF57C42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1F20871-5F17-46AD-A14C-3F330AF57C42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1F20871-5F17-46AD-A14C-3F330AF57C42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0338A35A-BA44-4073-A5B0-BB1E616B2DAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0338A35A-BA44-4073-A5B0-BB1E616B2DAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0338A35A-BA44-4073-A5B0-BB1E616B2DAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0338A35A-BA44-4073-A5B0-BB1E616B2DAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD4E0471-6E08-41EE-A353-58100003D072}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD4E0471-6E08-41EE-A353-58100003D072}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD4E0471-6E08-41EE-A353-58100003D072}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD4E0471-6E08-41EE-A353-58100003D072}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4CFAA758-DFA9-47B9-84DD-6FC99BC3E395}
+	EndGlobalSection
+EndGlobal

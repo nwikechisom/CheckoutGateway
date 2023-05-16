@@ -1,0 +1,122 @@
+version: "3.9"
+services:
+  #############################################################################################
+  ###                           Payment Gateway API                                         ###
+  #############################################################################################
+  paymentgateway-api:
+    image: paymentgateway-api
+    build:
+      dockerfile: ./CheckoutGateway.Api/Dockerfile
+      args:
+        - PROJECT_NAME=Checkout.Api
+    environment: 
+      - CONNECTIONSTRINGS__SQLSERVER=${SQL_SVR_CNSTRING}
+      - REDIS__SERVER=${REDIS_HOST}
+      - REDIS__PASSWORD=${REDIS_PASSWORD}
+      - REDIS__PORT=${REDIS_PORT}
+      - ALLOWEDHOSTS=*
+      - SERILOG__URL=${SERILOG_URL} 
+      - BANKOPTIONS__APIKEY=${BANKOPTIONS_API_KEY}
+      - BANKOPTIONS__BASEURL=${BANKOPTIONS_BASE_URL}
+      
+    ports:
+      - "8000:80"
+    depends_on:
+      - db
+      - redis
+      - seq
+    networks:
+      - am-services-net
+
+  ###############################################################################################
+    ###                       Bank Simulator API                                   ###
+  #############################################################################################
+  banksimulator-api:
+    image: banksimulator-api
+    build:
+      dockerfile: ./CheckoutGateway.BankSimulator.Api/Dockerfile
+      args: 
+        - PROJECT_NAME=Checkout.BankSimulator.Api
+    environment: 
+      - ALLOWEDHOSTS=*
+      - SERILOG__URL=${SERILOG_URL}
+    
+    ports:
+      - "8001:80"
+    depends_on:
+      - db
+      - redis
+      - seq
+    networks:
+      - am-services-net
+
+  #############################################################################################
+  ###                           REDIS & REDIS COMMANDER                                     ###
+  #############################################################################################
+  redis:
+    container_name: redis
+    image: redis
+    hostname: ${REDIS_HOST}
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD}"]
+    ports:
+      - "6379:6379"
+    environment: 
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    volumes:
+      - data-redis:/data
+    restart: always
+    networks:
+      - am-services-net
+  redis-commander:
+    container_name: redis-commander
+    hostname: redis-commander
+    image: rediscommander/redis-commander
+    restart: always
+    depends_on: [redis]
+    ports:
+      - "8082:8081"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_PORT=${REDIS_PORT}
+    networks:
+      - am-services-net
+  
+  #############################################################################################
+  ###                           SQLSERVER DATABASE                                    ###
+  #############################################################################################
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver
+    restart: unless-stopped
+    environment:
+      - SA_PASSWORD=your_password
+      - ACCEPT_EULA=Y
+    ports:
+      - 1433:1433  
+    networks:
+      - am-services-net    
+  
+  #############################################################################################
+  ###                           SEQ STRUCTURED LOGGING                                      ###
+  #############################################################################################
+  seq:
+    image: datalust/seq:latest
+    ports:
+      - "5341:80"
+    environment:
+      ACCEPT_EULA: "Y"
+    restart: unless-stopped
+    volumes:
+      - data-seq:/data
+    networks:
+      - am-services-net
+
+volumes:
+  data-redis:
+  data-seq:
+
+networks:
+  am-services-net:
+    driver: bridge
