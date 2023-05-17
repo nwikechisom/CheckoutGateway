@@ -5,13 +5,14 @@ services:
   #############################################################################################
   paymentgateway-api:
     image: paymentgateway-api
+    container_name: paymentgateway
     build:
       dockerfile: ./CheckoutGateway.Api/Dockerfile
       args:
         - PROJECT_NAME=Checkout.Api
     environment: 
       - CONNECTIONSTRINGS__SQLSERVER=${SQL_SVR_CNSTRING}
-      - REDIS__SERVER=${REDIS_HOST}
+      - REDIS__HOST=${REDIS_HOST}
       - REDIS__PASSWORD=${REDIS_PASSWORD}
       - REDIS__PORT=${REDIS_PORT}
       - ALLOWEDHOSTS=*
@@ -33,6 +34,7 @@ services:
   #############################################################################################
   banksimulator-api:
     image: banksimulator-api
+    container_name: banksimulator
     build:
       dockerfile: ./CheckoutGateway.BankSimulator.Api/Dockerfile
       args: 
@@ -42,7 +44,7 @@ services:
       - SERILOG__URL=${SERILOG_URL}
     
     ports:
-      - "8001:80"
+      - "0.0.0.0:8001:80"
     depends_on:
       - db
       - redis

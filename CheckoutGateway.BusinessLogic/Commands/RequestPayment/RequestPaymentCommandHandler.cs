@@ -31,6 +31,7 @@ public class RequestPaymentCommandHandler : IRequestHandler<RequestPaymentComman
     }
     public async Task<RequestPaymentResponse> Handle(RequestPaymentCommand request, CancellationToken cancellationToken)
     {
+        //validate request model
         var validationResult = _comandValidator.Validate(request);
         if (validationResult.Errors.Any())
         {
@@ -44,6 +45,8 @@ public class RequestPaymentCommandHandler : IRequestHandler<RequestPaymentComman
         }
         //map request to transaction DB
         var transaction = _mapper.Map<Transaction>(request);
+
+        //send request to issuing bank to validate card
         var verifyCardResponse = await _bankProxy.ValidateCard(request.CardNumber, request.CardExpiryMonth.ToString(), request.CardExpiryYear.ToString(), request.CardCvv, request.CardHolderName, request.Amount);
         if (verifyCardResponse is null || verifyCardResponse.Status != "00")
         {
@@ -71,8 +74,8 @@ public class RequestPaymentCommandHandler : IRequestHandler<RequestPaymentComman
         return new RequestPaymentResponse
         {
             TransactionReference = request.Reference,
-            Message = verifyCardResponse.Message ?? "Unable to validate card information",
-            Status = "99"
+            Message = verifyCardResponse.Message,
+            Status = "00"
         };
     }
 }

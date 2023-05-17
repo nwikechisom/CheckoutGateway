@@ -1,9 +1,11 @@
 using CheckoutGateway.Api.Middlewares;
 using CheckoutGateway.Api.ServiceExtensions;
 using CheckoutGateway.BusinessLogic.Proxy.Bank.Models;
+using CheckoutGateway.DataLayer.Context;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Reflection;
 
@@ -27,7 +29,6 @@ if (serilogUrl != null)
     .WriteTo.Seq(serverUrl: serilogUrl));
 
 builder.Services.AddMediatR(AppDomain.CurrentDomain.GetAssemblies());
-//builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration =
@@ -45,18 +46,27 @@ builder.Services.Configure<BankProxyCredentials>(configuration.GetSection("BankO
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+//Build application
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+//Add Automigration of Database Context
+using(var serviceScope = app.Services.CreateScope())
+{
+    var services = serviceScope.ServiceProvider;
+    var dbContext = services.GetRequiredService<DatabaseContext>();
+    var conn = dbContext.Database.GetConnectionString();
+    ServiceExtension.RunMigration<DatabaseContext>(dbContext).Wait();
+}
+
+//Add SwaggerUI for development Environment
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-//TODO: Delete the next two lines
-app.UseSwagger();
-app.UseSwaggerUI();
 
+// Configure the HTTP request pipeline
 app.UseHttpsRedirection();
 
 app.UseMiddleware<AuthMiddleware>();

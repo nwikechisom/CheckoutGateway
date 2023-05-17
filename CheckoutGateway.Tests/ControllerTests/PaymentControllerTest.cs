@@ -29,7 +29,7 @@ namespace CheckoutGateway.Tests.ControllerTests;
             var result = await _controller.RequestPaymentAsync(command);
 
             // Assert
-            Assert.IsType<OkResult>(result);
+            Assert.IsType<OkObjectResult>(result);
             _mediatorMock.Verify(m => m.Send(command, default), Times.Once);
         }
 
@@ -44,7 +44,7 @@ namespace CheckoutGateway.Tests.ControllerTests;
             var result = await _controller.PostPaymentAsync(command);
 
             // Assert
-            Assert.IsType<OkResult>(result);
+            Assert.IsType<OkObjectResult>(result);
             _mediatorMock.Verify(m => m.Send(command, default), Times.Once);
         }
 
@@ -60,7 +60,7 @@ namespace CheckoutGateway.Tests.ControllerTests;
             var result = await _controller.PostPaymentAsync(paymentReference);
 
             // Assert
-            Assert.IsType<OkResult>(result);
+            Assert.IsType<OkObjectResult>(result);
             _mediatorMock.Verify(m => m.Send(query, default), Times.Once);
         }
     }

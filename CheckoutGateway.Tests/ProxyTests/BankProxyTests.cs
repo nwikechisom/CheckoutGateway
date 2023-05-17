@@ -1,28 +1,25 @@
 ﻿using CheckoutGateway.BusinessLogic.Proxy.Bank.Models;
 using CheckoutGateway.BusinessLogic.Proxy.Bank.Service;
+using Flurl.Http.Testing;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Moq.Protected;
 using Newtonsoft.Json;
-using System;
 using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 
-
+namespace CheckoutGateway.Tests.ProxyTests;
 public class BankProxyTests
 {
     private readonly ILogger<BankProxy> _loggerMock;
-    private readonly IOptions<BankProxyCredentials> _bankOptionsMock;
+    private readonly Mock<IOptions<BankProxyCredentials>> _bankOptionsMock;
     
-    public BankProxyTests(IOptions<BankProxyCredentials> bankOptionsMock)
+    public BankProxyTests()
     {
         _loggerMock = Mock.Of<ILogger<BankProxy>>();
-        _bankOptionsMock = bankOptionsMock;
-        _bankOptionsMock = Options.Create(new BankProxyCredentials
+        _bankOptionsMock = new Mock<IOptions<BankProxyCredentials>>();
+        _bankOptionsMock.SetupGet(o => o.Value).Returns(new BankProxyCredentials
         {
             Baseurl = "https://localhost:7124/api/bankpayment",
             ApiKey = "mYq3t6w9z$C&F)J@NcRfTjWnZr4u7x!A"
@@ -30,47 +27,69 @@ public class BankProxyTests
     }
 
     [Fact]
+    public async Task ProcessTransaction_ShouldSendRequestToBankAndReturnResponse()
+    {
+        // Arrange
+        var reference = "123456";
+        var oneTimeToken = "1111";
+        var encryptedRequest = new
+        {
+            OneTimeToken = oneTimeToken,
+            Reference = reference,
+        };
+        var encryptedRequestJson = JsonConvert.SerializeObject(encryptedRequest);
+        var expectedResponse = new BankResponse
+        {
+            Message = "Success",
+            Status = "00",
+        };
+
+
+        using (var httpTest = new HttpTest())
+        {
+            httpTest.RespondWithJson(expectedResponse);
+            
+            var bankProxy = new BankProxy(_loggerMock, _bankOptionsMock.Object);
+
+            // Act
+            var result = await bankProxy.ProcessTransaction(reference, oneTimeToken);
+
+            // Assert
+            httpTest.ShouldHaveCalled("https://localhost:7124/api/bankpayment/processtransaction")
+                .WithHeader("X-Api-Key", "mYq3t6w9z$C&F)J@NcRfTjWnZr4u7x!A")
+                .WithVerb(HttpMethod.Post)
+                .WithRequestBody(encryptedRequestJson)
+                .Times(1);
+
+           Assert.Equal(expectedResponse, result);
+        }
+    }
+
+    [Fact]
     public async Task ProcessTransaction_ValidRequest_ReturnsBankResponse()
     {
         // Arrange
-        var reference = "transaction-reference";
-        var oneTimeToken = "token";
+        var reference = "293487";
+        var oneTimeToken = "1111";
         var expectedResponse = new BankResponse
         {
             Status = "00",
             Message = "Success",
         };
 
-        var bankProxy = new BankProxy(_loggerMock, _bankOptionsMock);
-
-        // Act
-        var result = await bankProxy.ProcessTransaction(reference, oneTimeToken);
-
-        // Assert
-        Assert.Equal(expectedResponse, result);
-    }
-
-    [Fact]
-    public async Task ProcessTransaction_ExceptionThrown_ReturnsErrorResponse()
-    {
-        // Arrange
-        var reference = "transaction-reference";
-        var oneTimeToken = "token";
-
-        var expectedResponse = new BankResponse
+        using (var httpTest = new HttpTest())
         {
-            Status = "99",
-            Message = "Unable to process transaction, please try again",
-        };
+            httpTest.RespondWithJson(expectedResponse);
 
-        var bankProxy = new BankProxy(_loggerMock, _bankOptionsMock);
+            var bankProxy = new BankProxy(_loggerMock, _bankOptionsMock.Object);
 
-        // Act
-        var result = await bankProxy.ProcessTransaction(reference, oneTimeToken);
+            // Act
+            var result = await bankProxy.ProcessTransaction(reference, oneTimeToken);
 
-        // Assert
-        Assert.Equal(expectedResponse.Status, result.Status);
-        Assert.Equal(expectedResponse.Message, result.Message);
+            // Assert
+            Assert.Equal(JsonConvert.SerializeObject(expectedResponse), JsonConvert.SerializeObject(result));
+        }
+
     }
 
     [Fact]
@@ -79,9 +98,9 @@ public class BankProxyTests
         // Arrange
         var cardNumber = "card-number";
         var expirationMonth = "12";
-        var expirationYear = "2023";
+        var expirationYear = "23";
         var cvc = "123";
-        var cardholderName = "John Doe";
+        var cardholderName = "Stevie Wonder";
         var amount = 100.0;
 
         var expectedResponse = new BankResponse
@@ -90,32 +109,18 @@ public class BankProxyTests
             Message = "Success",
         };
 
-        var bankProxy = new BankProxy(_loggerMock, _bankOptionsMock);
 
-        // Act
-        var result = await bankProxy.ValidateCard(cardNumber, expirationMonth, expirationYear, cvc, cardholderName, amount);
+        using (var httpTest = new HttpTest())
+        {
+            httpTest.RespondWithJson(expectedResponse);
 
-        // Assert
-        Assert.Equal(expectedResponse, result);
-    }
+            var bankProxy = new BankProxy(_loggerMock, _bankOptionsMock.Object);
 
-    private Mock<IHttpClientFactory> CreateHttpClientFactoryMock(BankResponse expectedResponse)
-    {
-        var httpClientMock = new Mock<HttpClient>();
-        httpClientMock
-            .Protected()
-            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(JsonConvert.SerializeObject(expectedResponse)),
-            });
+            // Act
+            var result = await bankProxy.ValidateCard(cardNumber, expirationMonth, expirationYear, cvc, cardholderName, amount);
 
-        var httpClientFactoryMock = new Mock<IHttpClientFactory>();
-        httpClientFactoryMock
-            .Setup(x => x.CreateClient(It.IsAny<string>()))
-            .Returns(httpClientMock.Object);
-
-        return httpClientFactoryMock;
+            // Assert
+            Assert.Equal(JsonConvert.SerializeObject(expectedResponse), JsonConvert.SerializeObject(result));
+        }
     }
 }

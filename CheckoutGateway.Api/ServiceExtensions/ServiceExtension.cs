@@ -5,6 +5,8 @@ using CheckoutGateway.DataLayer.Context;
 using CheckoutGateway.DataLayer.Repositories;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace CheckoutGateway.Api.ServiceExtensions;
 
@@ -28,4 +30,15 @@ internal static class ServiceExtension
         });
         //options.UseOpenIddict();
     });
+    public static async Task RunMigration<T>(T db) where T : DbContext
+    {
+        var pendingMigrations = db.Database.GetPendingMigrations().ToList();
+        if (pendingMigrations.Any())
+        {
+            var migrator = db.Database.GetService<IMigrator>();
+            foreach (var targetMigration in pendingMigrations) migrator.Migrate(targetMigration);
+        }
+
+        await Task.CompletedTask;
+    }
 }

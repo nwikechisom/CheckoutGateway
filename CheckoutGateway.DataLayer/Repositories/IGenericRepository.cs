@@ -7,13 +7,8 @@ namespace CheckoutGateway.DataLayer.Repositories
     {
         void Add(T entity);
         void Update(T entity);
-        void AddRange(IEnumerable<T> entities);
         IEnumerable<T> Find(Expression<Func<T, bool>> expression);
         IEnumerable<T> Find(Expression<Func<T, bool>> expression, params Expression<Func<T, object>>[] includes);
-        IEnumerable<T> GetAll();
-        T GetById(int id);
-        void Remove(T entity);
-        void RemoveRange(IEnumerable<T> entities);
         void Save();
     }
 }
